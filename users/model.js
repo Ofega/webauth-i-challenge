@@ -1,12 +1,11 @@
 const db = require('../data/db-config');
 
-
 const add = (user) => {
-    return db('user').insert(user).then((users) => getUser({ id: users[0] }));
+  return db('user').insert(user).then((users) => getUser({ id: users[0] }));
 }
 
-const getUser = (dataObj) => {
-    return db('user').where(dataObj).first();
+const getUser = (user) => {
+  return db('user').where(user).first();
 }
 
 const getUsers = () => {

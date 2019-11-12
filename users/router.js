@@ -10,14 +10,16 @@ router.post('/register', validateUserBody, (req, res, next) => {
     const secretPassword = bcrypt.hashSync(password, 11);
 
     db.add({ username, password: secretPassword }).then(user => {
-        res.status(201).json(user);
+        res.status(201).json({ message: `New user created with id of ${user.id}`});
     }).catch(next);
 })
 
 router.post('/login', validateUserBody, (req, res, next) => {
     const { username, password } = req.body;
+
     db.getUser({ username }).then(user => {
         const isValidPassword = bcrypt.compareSync(password, user.password);
+
         if (!user || !isValidPassword) {
             next({ message: "Invalid credentials", status: 401 });
         }
@@ -41,7 +43,7 @@ function validateUserBody(req, res, next) {
     const { username, password } = req.body;
 
     if (!username || !password) {
-        next({ message: '`username` and `password` fields required', status: 401 });
+        next({ message: 'username and password fields required', status: 401 });
     }
     req.body = { username, password };
     next();
