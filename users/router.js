@@ -17,16 +17,21 @@ router.post('/register', validateUserBody, (req, res, next) => {
 router.post('/login', validateUserBody, (req, res, next) => {
     const { username, password } = req.body;
 
-    db.getUser({ username }).then(user => {
-        const isValidPassword = bcrypt.compareSync(password, user.password);
+    db.getUser({ username })
+        .then((user) => {
+            const isValidPassword = bcrypt.compareSync(password, user.password);
 
-        if (!user || !isValidPassword) {
-            next({ message: "Invalid credentials", status: 401 });
-        }
-        req.session.user = user.username;
-        req.session.save();
-        res.status(200).json({ id: user.id, username: user.username });
-    }).catch(next);
+            if (!user || !isValidPassword) {
+                next({ message: "Invalid credentials", status: 401 });
+            }
+            
+            req.session.user = user.username;
+            req.session.save();
+            res.status(200).json({ id: user.id, username: user.username });
+        }).catch((err) => {
+            console.log(err); 
+            next()
+        });
 })
 
 router.get('/users', restricted, (req, res, next) => {
